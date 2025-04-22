@@ -379,6 +379,7 @@ document.addEventListener("DOMContentLoaded", function () {
     renderProducts(categoryProducts);
   }
 
+  // Fixed checkout form submission
   if (checkoutForm) {
     checkoutForm.addEventListener('submit', function(event) {
       event.preventDefault();

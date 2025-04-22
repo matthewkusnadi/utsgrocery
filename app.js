@@ -34,6 +34,69 @@ document.addEventListener("DOMContentLoaded", function () {
     pageTitle.textContent = pageCategory;
   }
 
+  // Check for search parameters
+  if (currentPage === "foodandbev.html") {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    
+    if (searchParam && searchInput) {
+      searchInput.value = searchParam;
+      // Trigger the input event to filter products
+      const inputEvent = new Event('input');
+      searchInput.dispatchEvent(inputEvent);
+    }
+  }
+
+  // Handle subcategory filtering
+  if (currentPage === "foodandbev.html" || currentPage === "household.html" || 
+      currentPage === "health.html" || currentPage === "pet.html") {
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryParam = urlParams.get('category');
+    const itemParam = urlParams.get('item');
+    
+    if (categoryParam || itemParam) {
+      // If we have a subcategory parameter, apply it as a filter when rendering products
+      const filterText = categoryParam || itemParam;
+      console.log(`Filtering by subcategory: ${filterText}`);
+      
+      // Get the original products for this page category
+      const categoryProducts = getProductsByCategory(pageCategory);
+      
+      // Override the getProductsByCategory function to apply additional filtering
+      window.getProductsByCategory = function(category) {
+        if (category !== pageCategory) {
+          return getProductsByCategory(category);
+        }
+        
+        let filteredProducts = categoryProducts;
+        
+        if (categoryParam) {
+          // For food and beverages, filter by the exact category
+          console.log("Filtering by category:", categoryParam);
+          filteredProducts = categoryProducts.filter(product => {
+            console.log("Product category:", product.category, "Looking for:", categoryParam);
+            return product.category === categoryParam;
+          });
+        } else if (itemParam) {
+          // For other sections, do a partial text match on product name
+          console.log("Filtering by item keyword:", itemParam);
+          filteredProducts = categoryProducts.filter(product => 
+            product.product_name.toLowerCase().includes(itemParam.toLowerCase())
+          );
+        }
+        
+        console.log("Found", filteredProducts.length, "products after filtering");
+        return filteredProducts;
+      };
+      
+      // Update page title to show the subcategory
+      if (pageTitle) {
+        const displayFilter = categoryParam || itemParam;
+        pageTitle.textContent = `${pageCategory} - ${displayFilter}`;
+      }
+    }
+  }
+
   let cart = [];
   if (localStorage.getItem("cart")) {
     try {
@@ -46,6 +109,19 @@ document.addEventListener("DOMContentLoaded", function () {
   } else {
     console.log("No cart found in localStorage");
   }
+
+  function updateCartCounter() {
+    const cartCounters = document.querySelectorAll('.cart-counter');
+    const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+    
+    cartCounters.forEach(counter => {
+      counter.textContent = totalItems;
+      counter.style.display = totalItems > 0 ? 'flex' : 'none';
+    });
+  }
+
+  // Call immediately after cart is loaded
+  updateCartCounter();
 
   function addToCart(product) {
     const existingItem = cart.find(
@@ -63,6 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Item added to cart:", product.product_name);
     console.log("Current cart:", cart);
     alert(product.product_name + " added to cart!");
+    updateCartCounter();
   }
 
   function removeFromCart(productId) {
@@ -80,6 +157,24 @@ document.addEventListener("DOMContentLoaded", function () {
     localStorage.setItem("cart", JSON.stringify(cart));
     
     renderCart();
+    updateCartCounter();
+  }
+
+  function updateCartItemQuantity(productId, newQuantity) {
+    const idToUpdate = typeof productId === 'string' ? parseInt(productId, 10) : productId;
+    console.log("Updating quantity for product ID:", idToUpdate, "to", newQuantity);
+    
+    const itemToUpdate = cart.find(item => item.product_id === idToUpdate);
+    if (itemToUpdate) {
+      if (newQuantity <= 0) {
+        removeFromCart(idToUpdate);
+      } else {
+        itemToUpdate.quantity = newQuantity;
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+        updateCartCounter();
+      }
+    }
   }
 
   function renderCart() {
@@ -125,7 +220,11 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
             <div class="cart-items">
               <p>Price: $${item.unit_price.toFixed(2)}</p>
-              <p>Quantity: ${item.quantity}</p>
+              <div class="quantity-controls">
+                <button class="quantity-btn decrease" data-id="${item.product_id}">-</button>
+                <span class="quantity-display">${item.quantity}</span>
+                <button class="quantity-btn increase" data-id="${item.product_id}">+</button>
+              </div>
               <p>Total: $${itemTotal.toFixed(2)}</p>
             </div>
           </div>
@@ -144,6 +243,29 @@ document.addEventListener("DOMContentLoaded", function () {
         const productId = parseInt(this.getAttribute('data-id'), 10);
         console.log("Remove button clicked for product ID:", productId);
         removeFromCart(productId);
+      });
+    });
+
+    const decreaseButtons = document.querySelectorAll('.quantity-btn.decrease');
+    const increaseButtons = document.querySelectorAll('.quantity-btn.increase');
+    
+    decreaseButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const productId = parseInt(this.getAttribute('data-id'), 10);
+        const itemToUpdate = cart.find(item => item.product_id === productId);
+        if (itemToUpdate) {
+          updateCartItemQuantity(productId, itemToUpdate.quantity - 1);
+        }
+      });
+    });
+    
+    increaseButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const productId = parseInt(this.getAttribute('data-id'), 10);
+        const itemToUpdate = cart.find(item => item.product_id === productId);
+        if (itemToUpdate) {
+          updateCartItemQuantity(productId, itemToUpdate.quantity + 1);
+        }
       });
     });
     
@@ -301,4 +423,92 @@ document.addEventListener("DOMContentLoaded", function () {
       window.location.href = 'index.html';
     });
   }
+
+  // Enable search on index.html
+  if (currentPage === "index.html" || currentPage === "") {
+    const indexSearchInput = document.querySelector(".top__nav .search-container input");
+    const indexSearchButton = document.querySelector(".top__nav .search-container button");
+    
+    if (indexSearchInput && indexSearchButton) {
+      indexSearchInput.addEventListener("input", function() {
+        const searchTerm = this.value.toLowerCase();
+        if (searchTerm.length > 0) {
+          // If on index page and user types in search, prepare for redirect
+          indexSearchButton.addEventListener("click", function() {
+            window.location.href = `foodandbev.html?search=${encodeURIComponent(searchTerm)}`;
+          });
+        }
+      });
+      
+      // Handle enter key press in search input
+      indexSearchInput.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          const searchTerm = this.value.toLowerCase();
+          if (searchTerm.length > 0) {
+            window.location.href = `foodandbev.html?search=${encodeURIComponent(searchTerm)}`;
+          }
+        }
+      });
+    }
+  }
+
+  // Dropdown functionality for mobile
+  document.addEventListener('click', function(event) {
+    const dropdowns = document.querySelectorAll('.dropdown-menu');
+    let clickedDropdown = false;
+    
+    // Check if the click was inside a dropdown or its trigger
+    const isDropdownOrTrigger = event.target.closest('.category_links > li');
+    
+    if (!isDropdownOrTrigger) {
+      // If clicked outside, close all dropdowns on mobile
+      dropdowns.forEach(dropdown => {
+        dropdown.style.opacity = '0';
+        dropdown.style.visibility = 'hidden';
+        
+        // Reset after transition
+        setTimeout(() => {
+          if (!dropdown.matches(':hover')) {
+            dropdown.removeAttribute('style');
+          }
+        }, 300);
+      });
+    }
+  });
+
+  // For mobile: toggle dropdowns on click instead of hover
+  const categoryItems = document.querySelectorAll('.category_links > li > a');
+  categoryItems.forEach(item => {
+    item.addEventListener('click', function(event) {
+      // Only apply this behavior on mobile
+      if (window.innerWidth <= 768) {
+        const parentLi = this.parentElement;
+        const dropdown = parentLi.querySelector('.dropdown-menu');
+        
+        if (dropdown) {
+          event.preventDefault(); // Prevent navigation
+          
+          // Check if this dropdown is already open
+          const isOpen = dropdown.style.visibility === 'visible';
+          
+          // Close all other dropdowns
+          document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            if (menu !== dropdown) {
+              menu.style.opacity = '0';
+              menu.style.visibility = 'hidden';
+            }
+          });
+          
+          // Toggle this dropdown
+          if (isOpen) {
+            dropdown.style.opacity = '0';
+            dropdown.style.visibility = 'hidden';
+          } else {
+            dropdown.style.opacity = '1';
+            dropdown.style.visibility = 'visible';
+          }
+        }
+      }
+    });
+  });
 });

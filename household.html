@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheggies</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://kit.fontawesome.com/1256adce66.js" crossorigin="anonymous"></script>
+    <link rel="icon" href="./pictures/Logo.png" type="image/png">
+</head>
+<body>
+    <div class="nav">
+        <div class="top__nav">
+            <a href="index.html"><img class="logo" src="./pictures/GroceryLogo.png" alt="Grocery Logo"></a>
+            
+            <div class="titlescreen">
+                <a href="index.html">Cheggies</a>
+            </div>
+            
+            <ul class="nav_list">
+                <li class="list outline"><a href="order.html"><i class="fa-solid fa-cart-shopping fa-xl" style="color: #000000;"></i></a></li>
+                <li class="list outline"><a href="#"><i class="fa-solid fa-user fa-xl" style="color: #000000;"></i></a></li>
+            </ul>
+        </div>
+
+        <div class="bottom__nav">
+            <ul class="category_links">
+                <li><a href="./foodandbev.html">Food and Beverages</a></li>
+                <li><a href="./household.html">Household Essentials</a></li>
+                <li><a href="./health.html">Health and Personal Care</a></li>
+                <li><a href="./pet.html">Pet Care</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="main_page">
+        <div class="main_page-layout">
+            <h1 id="pageTitle">Household Essentials</h1>
+            <div class="search-container">
+                <input id="searchInput" type="text" placeholder="Search for products ...">
+                <button type="submit"><i class="fa-solid fa-magnifying-glass" style="color: #666;"></i></button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="content-container-list">
+        <div id="productGrid" class="product-grid">
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+    <script src="index.js"></script>
+
+    <footer>
+        <div class="inner">
+      <h2 class="title">Cheggies</h1>
+      </div>
+      </footer>
+</body>
+</html>

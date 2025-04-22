@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheggies</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://kit.fontawesome.com/1256adce66.js" crossorigin="anonymous"></script>
+    <link rel="icon" href="./pictures/Logo.png" type="image/png">
+    <script src="./app.js" defer></script>
+</head>
+<body>
+    <div class="nav">
+        <div class="top__nav">
+            <a href="index.html"><img class="logo" src="./pictures/GroceryLogo.png" alt="Grocery Logo"></a>
+            <div class="titlescreen">
+                <a href="index.html">Cheggies</a>
+            </div>
+            <ul class="nav_list">
+                <li class="list outline"><a href="index.html"><i class="fa-solid fa-house fa-xl"></i></a></li>
+                <li class="list outline"><a href="#"><i class="fa-solid fa-user fa-xl"></i></a></li>
+            </ul>
+        </div>
+    </div>
+      
+    <div class="checkout_box">
+        <div class="checkout">
+            <form class="checkout-list" id="checkout-form" action="/checkout.html" method="post">
+                <div class="checkout-top">
+                    <div class="top">
+                        <label for="firstName">First Name</label>
+                        <input class="name" type="text" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="top">
+                        <label for="lastName">Last Name</label>
+                        <input class="name" type="text" id="lastName" name="lastName" required>
+                    </div>
+                </div>
+                
+                <label for="country">Country</label>
+                <input type="text" id="country" name="country" required>
+                
+                <label for="state">State</label>
+                <select id="state" name="state" required>
+                    <option value="">Select a state</option>
+                    <option value="NSW">New South Wales (NSW)</option>
+                    <option value="VIC">Victoria (VIC)</option>
+                    <option value="QLD">Queensland (QLD)</option>
+                    <option value="WA">Western Australia (WA)</option>
+                    <option value="SA">South Australia (SA)</option>
+                    <option value="TAS">Tasmania (TAS)</option>
+                    <option value="ACT">Australian Capital Territory (ACT)</option>
+                    <option value="NT">Northern Territory (NT)</option>
+                    <option value="Other">Other</option>
+                </select>
+                
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" required>
+                
+                <label for="street">Street Address</label>
+                <input type="text" id="street" name="street" required>
+                
+                <label for="postcode">Postcode/ZIP</label>
+                <input type="text" id="postcode" name="postcode" pattern="[0-9]{4}" title="Please enter a valid 4-digit Australian postcode" required>
+                
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
+                
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+                
+                <div>
+                    <button id="place-order-btn" class="checkout-button" type="submit">Place Order</button>
+                </div>
+            </form>
+        </div>
+ 

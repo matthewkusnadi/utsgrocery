@@ -285,4 +285,20 @@ document.addEventListener("DOMContentLoaded", function () {
     orderButton.addEventListener('click', function() {
       console.log("Order button clicked without form validation");
       
-      const checkoutBox = document.querySelector('.ch
+      const checkoutBox = document.querySelector('.checkout_box');
+      if (checkoutBox) {
+        checkoutBox.style.display = 'none';
+      }
+      if (confirmationMessage) {
+        confirmationMessage.classList.remove('hidden');
+      }
+    });
+  }
+
+  if (completeButton) {
+    completeButton.addEventListener('click', function() {
+      localStorage.removeItem("cart");
+      window.location.href = 'index.html';
+    });
+  }
+});

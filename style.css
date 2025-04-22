@@ -595,4 +595,22 @@ button[type="submit"]:hover {
 }
 
 .remove__button{
-  display
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 40px;
+  
+}
+.remove__btn{
+  cursor: pointer;
+  background-color:#E01A22;
+  border: none;
+  font-size: 16px;
+  color:white;
+  padding: 10px 15px;
+  border-radius: 4px;
+  transition: 0.3s;
+}
+
+.remove__btn:hover{
+  background-color: #B9091D;
+}
